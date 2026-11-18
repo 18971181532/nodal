@@ -1,0 +1,6 @@
+resistive divider
+V1 in 0 DC 10
+R1 in mid 2k
+R2 mid 0 3k
+.op
+.end

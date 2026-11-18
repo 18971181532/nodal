@@ -1,0 +1,77 @@
+:root{
+  --bg:#0b1220; --panel:#111a2c; --panel2:#0e1626; --line:#1e2a44;
+  --text:#e2e8f0; --muted:#8ea0bd; --teal:#2dd4bf; --amber:#fbbf24;
+  --red:#f87171; --green:#4ade80; --blue:#60a5fa; --violet:#a78bfa;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);
+  font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:14px;line-height:1.6}
+header{display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:8px;padding:14px 22px;border-bottom:1px solid var(--line);
+  background:var(--panel2)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand h1{font-size:20px;letter-spacing:4px}
+.ver{color:var(--muted);font-size:12px}
+.tagline{color:var(--muted);font-size:12px}
+.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--amber)}
+.dot.ok{background:var(--green)}
+.dot.err{background:var(--red)}
+nav.tabs{display:flex;gap:4px;padding:0 18px;border-bottom:1px solid var(--line);
+  background:var(--panel2);overflow-x:auto}
+nav.tabs button{background:none;border:none;color:var(--muted);
+  padding:12px 16px;font-size:14px;cursor:pointer;
+  border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs button.active{color:var(--teal);border-bottom-color:var(--teal)}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+.tab{display:none}
+.tab.active{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:20px;margin-bottom:18px}
+.card h2{font-size:16px;margin-bottom:8px}
+.card.warn{border-color:#7c5a12}
+.hint{color:var(--muted);font-size:12.5px;margin-bottom:12px}
+.row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin:10px 0}
+label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:12px}
+input,select,textarea{background:var(--panel2);border:1px solid var(--line);
+  color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;
+  font-family:Consolas,"Courier New",monospace}
+input{width:120px}
+select{min-width:110px}
+textarea{width:100%;resize:vertical;line-height:1.5}
+button{background:var(--teal);color:#04211d;border:none;border-radius:8px;
+  padding:9px 18px;font-size:14px;font-weight:600;cursor:pointer}
+button:hover{filter:brightness(1.1)}
+button.secondary{background:var(--panel2);color:var(--teal);
+  border:1px solid var(--teal)}
+.error{background:#3b1219;border:1px solid var(--red);color:#fecaca;
+  border-radius:8px;padding:10px 12px;margin:10px 0;font-size:13px;
+  font-family:Consolas,monospace;white-space:pre-wrap}
+.hidden{display:none}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+  padding:10px 16px;min-width:120px}
+.stat .k{color:var(--muted);font-size:11px;text-transform:uppercase;
+  letter-spacing:1px}
+.stat .v{font-size:18px;font-weight:700;color:var(--teal);
+  font-family:Consolas,monospace}
+.stat .v small{font-size:11px;color:var(--muted);font-weight:400}
+table.data{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+table.data th{color:var(--muted);text-align:left;font-weight:500;
+  padding:6px 10px;border-bottom:1px solid var(--line);font-size:12px}
+table.data td{padding:6px 10px;border-bottom:1px solid var(--line);
+  font-family:Consolas,monospace}
+table.data td:first-child{color:var(--teal)}
+canvas{width:100%;height:auto;background:var(--panel2);
+  border:1px solid var(--line);border-radius:10px;margin-top:12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:12px;
+  color:var(--muted)}
+.legend .item{display:flex;align-items:center;gap:6px}
+.legend .swatch{width:14px;height:3px;border-radius:2px}
+footer{display:flex;justify-content:space-between;padding:14px 22px;
+  border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+@media (max-width:1000px){
+  .row{flex-direction:column;align-items:stretch}
+  input,select{width:100%}
+}

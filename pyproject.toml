@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nodal"
+version = "1.0.0"
+description = "Hand-written SPICE-style analog circuit simulator: netlist parser, MNA, Newton-Raphson, transient/AC/DC analyses and a browser workbench. Zero dependencies."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Yao" }]
+keywords = ["spice", "circuit", "simulation", "mna", "newton", "electronics", "education"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
+
+[project.scripts]
+nodal = "nodal.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/18971181532/nodal"
+
+[tool.setuptools]
+packages = ["nodal"]
+
+[tool.setuptools.package-data]
+nodal = ["web/*"]

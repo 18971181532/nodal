@@ -1,0 +1,12 @@
+photodiode transimpedance amplifier
+* photodiode = 2uA signal pulse + 3pF junction capacitance
+I1 0 sum PULSE(0 2u 1u 10n 10n 20u 40u)
+C1 sum 0 3p
+* op-amp macromodel: VCVS, gain 1e5, single pole at 100 kHz
+E1 amp 0 sum 0 -1e5
+R3 amp out 100
+C2 out 0 15.9n
+Rf out sum 100k
+Cf out sum 0.5p
+.tran 50n 40u
+.end

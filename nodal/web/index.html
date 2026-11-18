@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nodal · 电路仿真工作台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+      <path d="M2 15 H6 L8 9 L12 21 L16 9 L20 21 L22 15 H28"
+            fill="none" stroke="#2dd4bf" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="2" cy="15" r="2" fill="#fbbf24"/>
+      <circle cx="28" cy="15" r="2" fill="#fbbf24"/>
+    </svg>
+    <h1>NODAL</h1>
+    <span class="ver">v1.0</span>
+    <span class="tagline">手写 SPICE 内核 · MNA · 牛顿迭代 · 零依赖</span>
+  </div>
+  <div class="status"><span class="dot" id="status-dot"></span><span id="status-text">连接中…</span></div>
+</header>
+
+<nav class="tabs">
+  <button class="active" data-tab="circuit">电路</button>
+  <button data-tab="wave">瞬态波形</button>
+  <button data-tab="bode">AC 波特图</button>
+  <button data-tab="matrix">MNA 矩阵</button>
+  <button data-tab="newton">牛顿收敛</button>
+  <button data-tab="ref">参考</button>
+</nav>
+
+<main>
+<!-- ==================== 电路 ==================== -->
+<section id="tab-circuit" class="tab active">
+  <div class="card">
+    <h2>网表编辑器</h2>
+    <p class="hint">SPICE 子集：R C L V I D E G F H；命令 .op .tran .ac .dc .model .print。所有标签页共用这份网表。</p>
+    <div class="row">
+      <label>示例电路
+        <select id="example-select">
+          <option value="divider">电阻分压器</option>
+          <option value="rc" selected>RC 阶跃响应</option>
+          <option value="rlc">RLC 带通</option>
+          <option value="rectifier">半波整流 + 滤波</option>
+          <option value="tia">光电二极管 TIA</option>
+        </select>
+      </label>
+      <button id="load-example" class="secondary">载入示例</button>
+    </div>
+    <textarea id="netlist" spellcheck="false" rows="12"></textarea>
+    <div class="row">
+      <button id="run-parse">解析</button>
+      <button id="run-op">求工作点</button>
+    </div>
+    <div id="circuit-error" class="error hidden"></div>
+  </div>
+  <div class="card hidden" id="parse-card">
+    <h2>电路结构</h2>
+    <div id="parse-summary" class="stats"></div>
+    <table class="data" id="element-table"></table>
+  </div>
+  <div class="card hidden" id="op-card">
+    <h2>直流工作点</h2>
+    <div id="op-stats" class="stats"></div>
+    <table class="data" id="op-table"></table>
+  </div>
+</section>
+
+<!-- ==================== 瞬态 ==================== -->
+<section id="tab-wave" class="tab">
+  <div class="card">
+    <h2>瞬态分析</h2>
+    <p class="hint">梯形积分（trap）或后向欧拉（be）；步长失败自动减半重试。使用「电路」标签中的网表。</p>
+    <div class="row">
+      <label>步长 tstep (s)<input id="tran-step" type="text" value="10u"></label>
+      <label>终止 tstop (s)<input id="tran-stop" type="text" value="5m"></label>
+      <label>积分方法
+        <select id="tran-method"><option value="trap">trap</option><option value="be">be</option></select>
+      </label>
+      <button id="run-tran">运行瞬态</button>
+    </div>
+    <div id="tran-error" class="error hidden"></div>
+    <canvas id="wave-canvas" width="1040" height="420"></canvas>
+    <div id="wave-legend" class="legend"></div>
+  </div>
+  <div class="card hidden" id="wave-summary-card">
+    <h2>波形测量</h2>
+    <table class="data" id="wave-table"></table>
+  </div>
+</section>
+
+<!-- ==================== AC ==================== -->
+<section id="tab-bode" class="tab">
+  <div class="card">
+    <h2>AC 小信号扫描</h2>
+    <p class="hint">在工作点处线性化（二极管取微分电导），复数 MNA 逐频求解。源需带 AC 幅值。</p>
+    <div class="row">
+      <label>模式<select id="ac-mode"><option>dec</option><option>oct</option><option>lin</option></select></label>
+      <label>点数/十倍频<input id="ac-n" type="text" value="40"></label>
+      <label>起始 (Hz)<input id="ac-start" type="text" value="100"></label>
+      <label>终止 (Hz)<input id="ac-stop" type="text" value="1meg"></label>
+      <button id="run-ac">扫描</button>
+    </div>
+    <div id="ac-error" class="error hidden"></div>
+    <canvas id="bode-mag" width="1040" height="300"></canvas>
+    <canvas id="bode-phase" width="1040" height="240"></canvas>
+    <div id="bode-legend" class="legend"></div>
+  </div>
+  <div class="card hidden" id="bode-summary-card">
+    <h2>频响指标</h2>
+    <table class="data" id="bode-table"></table>
+  </div>
+</section>
+
+<!-- ==================== 矩阵 ==================== -->
+<section id="tab-matrix" class="tab">
+  <div class="card">
+    <h2>MNA 戳记矩阵</h2>
+    <p class="hint">未知量 = 节点电压 + 电压源/电感/受控源支路电流。亮度为 log 压缩幅值；右侧一列是 RHS。</p>
+    <div class="row">
+      <label>模式<select id="matrix-mode"><option value="op">DC (op)</option><option value="ac">AC @1kHz（幅值）</option></select></label>
+      <button id="run-matrix">生成矩阵</button>
+    </div>
+    <div id="matrix-error" class="error hidden"></div>
+    <div id="matrix-stats" class="stats"></div>
+    <canvas id="matrix-canvas" width="720" height="720"></canvas>
+  </div>
+</section>
+
+<!-- ==================== 牛顿 ==================== -->
+<section id="tab-newton" class="tab">
+  <div class="card">
+    <h2>牛顿-拉夫逊收敛轨迹</h2>
+    <p class="hint">二极管电路的工作点求解：每次迭代记录 max|Δv| 与 max|Δi|（对数轴）。线性电路一步收敛。试试整流示例。</p>
+    <div class="row"><button id="run-newton">求解并绘制</button></div>
+    <div id="newton-error" class="error hidden"></div>
+    <canvas id="newton-canvas" width="1040" height="360"></canvas>
+    <div id="newton-legend" class="legend"></div>
+    <table class="data" id="newton-table"></table>
+  </div>
+</section>
+
+<!-- ==================== 参考 ==================== -->
+<section id="tab-ref" class="tab">
+  <div class="card">
+    <h2>元件语法</h2>
+    <table class="data">
+      <tr><th>元件</th><th>语法</th><th>说明</th></tr>
+      <tr><td>R / C / L</td><td>R1 n+ n- 4.7k</td><td>工程后缀 t g meg k m u n p f</td></tr>
+      <tr><td>V / I</td><td>V1 n+ n- DC 5 AC 1</td><td>DC / SIN(off amp f [td [θ]]) / PULSE(v1 v2 [td tr tf pw per])</td></tr>
+      <tr><td>D</td><td>D1 a k DMOD</td><td>.model DMOD D(IS=1e-14 N=1)，Shockley + SPICE 限幅</td></tr>
+      <tr><td>E / G</td><td>E1 o+ o- c+ c- 1e5</td><td>VCVS / VCCS（运放宏模型用 E）</td></tr>
+      <tr><td>F / H</td><td>F1 o+ o- Vctrl 10</td><td>CCCS / CCVS，控制量为电压源支路电流</td></tr>
+    </table>
+    <h2>分析命令</h2>
+    <table class="data">
+      <tr><th>命令</th><th>示例</th><th>算法</th></tr>
+      <tr><td>.op</td><td>.op</td><td>C 开路 L 短路，牛顿迭代</td></tr>
+      <tr><td>.tran</td><td>.tran 10u 5m [0 [tmax]] [uic]</td><td>梯形/后向欧拉伴随模型，步长自适应减半</td></tr>
+      <tr><td>.ac</td><td>.ac dec 40 100 1meg</td><td>工作点线性化 + 复数 LU 逐频求解</td></tr>
+      <tr><td>.dc</td><td>.dc V1 0 5 0.1</td><td>源扫描，牛顿warm-start</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>内核基准</h2>
+    <p class="hint">在生成的 RC 梯形网络上计时（纯 Python，无 numpy）。</p>
+    <div class="row">
+      <label>级数<input id="bench-stages" type="text" value="16"></label>
+      <label>瞬态点数<input id="bench-points" type="text" value="200"></label>
+      <button id="run-bench">运行基准</button>
+    </div>
+    <div id="bench-stats" class="stats"></div>
+  </div>
+  <div class="card warn">
+    <h2>边界与声明</h2>
+    <p>教学实现：理想化器件模型（无温度效应、无 BSIM、无噪声分析、无蒙特卡洛），
+    二极管仅 IS/N 两参数。不可用于流片签核或安全关键设计。生产仿真请用
+    ngspice / Xyce / Spectre。服务仅监听 127.0.0.1。</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <span>Nodal · 零依赖 · 纯 Python 标准库</span>
+  <span id="footer-port">port 8863 · v1.0.0</span>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

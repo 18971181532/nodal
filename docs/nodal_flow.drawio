@@ -1,0 +1,68 @@
+<mxfile host="app.diagrams.net" modified="2026-11-18T00:00:00.000Z" agent="nodal" version="24.0.0" type="device">
+  <diagram id="nodal-flow" name="Nodal 仿真流水线">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n1" value="网表文本 (.cir)&#10;R C L V I D E G F H&#10;.op .tran .ac .dc .model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0e1626;strokeColor=#2dd4bf;fontColor=#e2e8f0;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="440" y="40" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="netlist.py 解析器&#10;词法(括号分组) / 工程后缀 / 续行注释&#10;元件·模型·分析命令·校验(地/重名/模型)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#60a5fa;fontColor=#e2e8f0;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="440" y="170" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="mna.py System&#10;未知量 = 节点电压(除地) + V/L/E/H 支路电流&#10;元件戳记 stamp → A·x = b" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#60a5fa;fontColor=#e2e8f0;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="440" y="300" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" value="分析模式?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#0e1626;strokeColor=#fbbf24;fontColor=#e2e8f0;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="500" y="430" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="op1" value="op / dc&#10;C 开路 · L 短路&#10;DC 扫描 warm-start" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#a78bfa;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="120" y="560" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="tr1" value="tran&#10;C/L 伴随模型 (trap: 2C/h, be: C/h)&#10;历史源 ieq / veq 进入 RHS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#a78bfa;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="560" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ac1" value="ac&#10;工作点处线性化 (二极管 gd, jωC, jωL)&#10;dec / oct / lin 频率网格" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#a78bfa;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="830" y="560" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="nw" value="牛顿-拉夫逊迭代 (analysis.py)&#10;二极管线性化 gd + ieq = i(vd) − gd·vd&#10;SPICE 结限幅 vcrit = nVT·ln(nVT/(√2·IS))&#10;收敛: Δv &lt; voltol+reltol·|v| 且 Δi &lt; abstol+reltol·|i|" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#f87171;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="690" width="380" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="lu" value="matrix.py 手写 LU&#10;部分主元高斯消元&#10;实数 / 复数同一套代码" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#2dd4bf;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="840" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="dt" value="步长自适应&#10;失败: dt/2 重试 (至 dt/64)&#10;成功: 更新历史态, dt×1.5 恢复" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0e1626;strokeColor=#fbbf24;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="760" y="690" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="out" value="解向量 x → 节点电压 / 支路电流 / 复数频响" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0e1626;strokeColor=#2dd4bf;fontColor=#e2e8f0;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="380" y="960" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="me" value="measure.py&#10;上升时间/过冲/纹波/频率&#10;-3dB 带宽/峰值增益" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#4ade80;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="180" y="1080" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="vi" value="visual.py&#10;MNA 热图 / 牛顿轨迹&#10;降采样 / 基准" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#4ade80;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="1080" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ui" value="cli.py (10 子命令, --json)&#10;server.py (7 API, 127.0.0.1:8863)&#10;web/ 六标签工作台 (Canvas)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111a2c;strokeColor=#4ade80;fontColor=#e2e8f0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="760" y="1080" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8ea0bd;" edge="1" parent="1" source="n1" target="n2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8ea0bd;" edge="1" parent="1" source="n2" target="n3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8ea0bd;" edge="1" parent="1" source="n3" target="d1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="op/dc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#a78bfa;fontColor=#8ea0bd;" edge="1" parent="1" source="d1" target="op1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="tran" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#a78bfa;fontColor=#8ea0bd;" edge="1" parent="1" source="d1" target="tr1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" value="ac" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#a78bfa;fontColor=#8ea0bd;" edge="1" parent="1" source="d1" target="ac1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#f87171;" edge="1" parent="1" source="op1" target="nw"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#f87171;" edge="1" parent="1" source="tr1" target="nw"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" value="每步" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#fbbf24;fontColor=#8ea0bd;" edge="1" parent="1" source="tr1" target="dt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" value="不收敛" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#fbbf24;fontColor=#8ea0bd;dashed=1;" edge="1" parent="1" source="dt" target="nw"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2dd4bf;" edge="1" parent="1" source="nw" target="lu"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" value="逐频点" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2dd4bf;fontColor=#8ea0bd;" edge="1" parent="1" source="ac1" target="lu"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="950" y="875" /></Array></mxGeometry></mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8ea0bd;" edge="1" parent="1" source="lu" target="out"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#4ade80;" edge="1" parent="1" source="out" target="me"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#4ade80;" edge="1" parent="1" source="out" target="vi"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#4ade80;" edge="1" parent="1" source="out" target="ui"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
